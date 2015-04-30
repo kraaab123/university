@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="ru">
+	<head>
+		<meta charset="utf-8" />
+		<title>
+            {% if title %}{{ title }} - {% endif %}
+        </title>
+
+        {% block head %}{% endblock %}
+	</head>
+
+	<body>
+    {% block body %}
+
+        {% block message_container %}
+            {% if messages %}
+            <div>
+                <h3>Информация</h3>
+
+                {% if messages|length > 1 %}
+                <ul>
+                    {% for message in messages %}
+                        <li>{{ message }}</li>
+                    {% endfor %}
+                </ul>
+                {% elif messages|length == 1 %}
+                    {{ messages.0 }}
+                {% endif %}
+
+            </div>
+            {% endif %}
+        {% endblock message_container%}
+
+
+        {% block content %}{% endblock %}
+
+        {% block query_debug %}
+            {# Настройки дебага #}
+            {% if debug %}
+                <div id="debug">
+                  <h3>Queries</h3>
+                  <p>
+                    {{ sql_queries|length }} Quer{{ sql_queries|pluralize:"y,ies" }}
+                    {% ifnotequal sql_queries|length 0 %}
+                        (<span style="cursor: pointer;" onclick="var s=document.getElementById('debugQueryTable').style;s.display=s.display=='none'?'':'none';this.innerHTML=this.innerHTML=='Show'?'Hide':'Show';">Show</span>)
+                    {% endifnotequal %}
+                  </p>
+                  <table id="debugQueryTable" style="display: none;">
+                    <thead>
+                        <tr>
+                          <th scope="col">#</th>
+                          <th scope="col">SQL</th>
+                          <th scope="col">Time</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for query in sql_queries %}<tr class="{% cycle odd,even %}">
+                          <td>{{ forloop.counter }}</td>
+                          <td>{{ query.sql|escape }}</td>
+                          <td>{{ query.time }}</td>
+                        </tr>{% endfor %}
+                    </tbody>
+                  </table>
+                </div>
+            {% endif %}
+        {% endblock %}
+    {% endblock body %}
+	</body>
+</html>
